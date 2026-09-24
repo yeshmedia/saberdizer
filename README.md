@@ -2,6 +2,8 @@
 
 Landing page para `https://institutosaberdizer.com.br/`, com formulário de interesse armazenado em MariaDB local. A página e o botão de WhatsApp continuam disponíveis mesmo se o banco estiver temporariamente indisponível.
 
+**Instalação no EasyPanel:** siga o [guia passo a passo](GUIA-EASYPANEL.md) para criar o MariaDB e o App a partir do GitHub.
+
 ## Estrutura
 
 - `public/`: página, estilos, imagens e endpoint do formulário.
