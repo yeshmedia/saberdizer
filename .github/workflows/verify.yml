@@ -1,0 +1,33 @@
+name: Verify site
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start the isolated site and database
+        run: |
+          cp .env.example .env
+          docker compose up -d --build
+      - name: Check PHP syntax
+        run: |
+          docker compose exec -T web php -l /var/www/app/database.php
+          docker compose exec -T web php -l /var/www/html/api/interest.php
+          docker compose exec -T web php -l /var/www/bin/migrate.php
+      - name: Check page and lead registration
+        run: |
+          curl --fail --silent http://127.0.0.1:8080/ > /dev/null
+          response=$(curl --fail --silent --show-error \
+            --header 'Origin: http://localhost:8080' \
+            --form 'name=Teste de Integração' \
+            --form 'whatsapp=75999990000' \
+            --form 'consent=1' \
+            http://127.0.0.1:8080/api/interest.php)
+          printf '%s' "$response" | grep -q 'Recebemos seu interesse'
+      - name: Stop the isolated services
+        if: always()
+        run: docker compose down -v
